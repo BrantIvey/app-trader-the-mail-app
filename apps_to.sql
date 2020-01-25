@@ -1,4 +1,4 @@
-select name, p.rating,
+with cte as (select name, p.rating,
 	p.review_count as play_store_review_count,
 	install_count,
 	replace(p.price, '$','')::numeric as price,
@@ -18,10 +18,20 @@ select name, p.rating,
 	case when replace(p.price, '$','')::numeric <=1 then 10000
 	else replace(p.price, '$','')::numeric * 10000
 	END as purchase_price,
-	case when replace(p.price, '$','')::numeric <=1 then 10000
-	else replace(p.price, '$','')::numeric * 10000
-	END as purchase_price,
-	'9000' :: INT AS monthly_net_revenue
+	'9000'::int as monthly_net_revenue
 from play_store_apps as p
 inner join app_store_apps as a using (name)
-order by name, p.review_count desc
+order by name, p.review_count desc)
+select
+	name,
+	rating,
+	play_store_review_count,
+	app_store_review_count,
+	install_count,
+	price,
+	lifespan_months,
+	purchase_price,
+	monthly_net_revenue,
+	monthly_net_revenue * lifespan_months - purchase_price as net_revenue
+from cte
+order by net_revenue desc
