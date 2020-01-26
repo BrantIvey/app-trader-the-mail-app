@@ -1,5 +1,5 @@
 -- Review table contents for column matches and type matches with OUTER JOIN
---Line up matching fields to compare row contents side by side
+-- Line up matching fields to compare row contents side by side
 SELECT a.name AS a_name, p.name AS p_name, 
        a.price AS a_price, p.price AS p_price, 
        a.review_count AS a_review_count, p.review_count AS p_review_count, 
