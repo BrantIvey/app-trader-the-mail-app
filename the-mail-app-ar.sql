@@ -20,11 +20,15 @@ SELECT a.name AS a_name, p.name AS p_name,
 	   
 	   a.size_bytes AS a_size_bytes, p.size as p_size, 
 	   
+-- The unique fields do not require table.field prefixes, however for readability to know the sources
+-- Best practice would be to label tables.fields correctly for consumers be assured of the right table   
 	   a.currency AS a_currency,
 	   
 	   p.type AS p_type,  
-	   	   
+-- Note two fields found only on the p table were also renamed for consistency without the p. prefix
+-- This method works though doesn't conform to readability best practice
 	   category AS p_category, 
+	   
 	   install_count AS p_install_count
 	  	   
 	   FROM app_store_apps AS a
