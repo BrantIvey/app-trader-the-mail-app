@@ -67,3 +67,4 @@ select
 FROM cte
 order by net_revenue desc, rating_rank
 LIMIT 10;
+--great job
