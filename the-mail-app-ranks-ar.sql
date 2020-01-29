@@ -1,7 +1,9 @@
+-- Building on the Common Table Elements (With CTE) to calculate fields outside the INNER JOIN between 
+-- the app store and the play store we added RANK to see how many of the top revenue producers were also 
+-- Top Avg Rating or TOP Review Counts
 with cte as (
 	select distinct name,
-	p.genres as play_store_genre,
-	a.primary_genre as app_store_genre,
+	p.genres as play_store_genre, a.primary_genre as app_store_genre,
 	round((p.rating + a.rating)/2,2) as avg_rating,
 	p.review_count as play_store_review_count,
 	install_count,
@@ -50,9 +52,23 @@ select
 	avg_rating,
 	play_store_genre,
 	app_store_genre,
-	purchase_price,
-	monthly_net_revenue * round((A_lifespan_months + P_lifespan_months)/2,2) - purchase_price as net_revenue
-from cte
-order by net_revenue desc
-limit 10
+	purchase_price, 
+	A_lifespan_months,
+	P_lifespan_months,
+	monthly_net_revenue * round((A_lifespan_months + P_lifespan_months)/2,2) - purchase_price as net_revenue,
+-- Rank observations may be made with combinations of fields or solo fields, commenting out as reviewing
+-- Apps recommended for purchase based on net_revenue are 10+ years old with a mix of rating & review counts	
+	RANK() OVER(ORDER BY avg_rating DESC) AS rating_rank,
+	RANK() OVER(ORDER BY app_store_review_count DESC) AS a_review_count_rank
+-- Optional Rank fields	
+	-- RANK() OVER(ORDER BY play_store_review_count DESC) AS p_review_count_rank
+	-- RANK() OVER(ORDER BY A_lifespan_months DESC) AS A_lifespan_rank,
+	-- RANK() OVER(ORDER BY P_lifespan_months DESC) AS P_lifespan_rank,
+-- Running sum of the Purchase Price and Net Revenue
+-- SUM (purchase_price) over (order by purchase_price 
+							  -- rows unbounded preceding) as cumulative_purchase_price
+FROM cte
+order by net_revenue desc, rating_rank
+LIMIT 10;
 
+-- Curiosity about the rating ranks 
